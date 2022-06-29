@@ -18,7 +18,7 @@ function harvest(creep) {
             } else {creep.moveTo(leftovers)}
         }
     } else {
-        let ruins = creep.room.find(FIND_RUINS);
+        let ruins = creep.room.find(FIND_RUINS).filter(ruin => (ruin.store.getUsedCapacity() > 0));
         if(ruins.length > 0) {
             ruins = creep.pos.findClosestByPath(ruins);
             if(creep.withdraw(ruins) == ERR_NOT_IN_RANGE) {
