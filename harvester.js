@@ -31,11 +31,7 @@ function harvest(creep) {
         } else {
             let source = creep.pos.findClosestByPath(creep.room.find(FIND_SOURCES));
             if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                if(creep.memory._move) {
-                    if(creep.memory._move.dest != source.pos) {
-                        creep.moveTo(source);
-                    }
-                } else {creep.moveTo(source)}
+                creep.moveTo(source);
             }
         }
     }
@@ -54,13 +50,7 @@ module.exports = function(creep) {
         case 0:
             let spawn = creep.pos.findClosestByPath(creep.room.find(FIND_MY_SPAWNS));
             if(creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                if(creep.memory._move.dest != spawn.pos) {
-                    if(creep.memory._move) {
-                        if(creep.memory._move.dest != spawn.pos) {
-                            creep.moveTo(spawn);
-                        }
-                    } else {creep.moveTo(spawn)}
-                }
+                creep.moveTo(spawn);
             }
             break;
         case 1:
