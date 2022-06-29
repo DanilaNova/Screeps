@@ -15,7 +15,7 @@ module.exports = function(creep) {
                 creep.moveTo(spawn);
             }
         } else {creep.moveTo(spawn);}
-        if(spawn.store.getUsedCapacity(RESOURCE_ENERGY) > 100) {
+        if(spawn.store.getUsedCapacity(RESOURCE_ENERGY) > 200) {
             creep.withdraw(spawn, RESOURCE_ENERGY)
         }
     } else {
