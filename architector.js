@@ -15,10 +15,18 @@ module.exports = function(room, sources, structures) {
         room.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
     });
     sources.forEach(source => {
-        let path = source.pos.findPathTo(room.controller.pos.findClosestByPath(room.find(FIND_MY_SPAWNS)), {ignoreCreeps: true});
-        path.pop();
-        path.forEach(pos => {
-            room.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
-        });
+        let base = room.find(FIND_MY_STRUCTURES).filter(stuct => stuct.structureType == STRUCTURE_SPAWN | stuct.structureType == STRUCTURE_EXTENSION);
+        let cb = source.pos.findClosestByPath(base, {ignoreCreeps: true})
+        if(cb) {
+            base = base.concat(room.find(FIND_MY_CONSTRUCTION_SITES).filter(stuct => stuct.structureType == STRUCTURE_SPAWN | stuct.structureType == STRUCTURE_EXTENSION));
+            let path = source.pos.findPathTo(cb, {ignoreCreeps: true});
+            path.pop();
+            path.forEach(pos => {
+               room.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD);
+            });
+        } else {
+            console.log("Architector: Cannot find closest to source base stucture!");
+            Game.notify("From Architector on " + Game.shard.name + "\nCannot find closest to source base stucture!");
+        }
     });
 }
