@@ -11,7 +11,7 @@ module.exports.loop = function() {
 
     spawn = spawns["Spawn1"];
     architector(spawn.room);
-    
+
     creeps = spawn.room.find(FIND_MY_CREEPS);
     harvesters = creeps.filter(creep => creep.memory["role"] == "harvester");
     harvesters.forEach(creep => harvester(creep));
