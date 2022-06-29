@@ -3,22 +3,29 @@ const upgrader = require("upgrader");
 const builder = require("builder");
 const architector = require("architector");
 
-var rooms, creeps, spawns, spawn, harvesters, upgraders, builders;
+var rooms, creeps, sources, structures, spawns, spawn, harvesters, upgraders, builders;
 
 module.exports.loop = function() {
     //creeps = Game.creeps;
-    spawns = Game.spawns;
+    spawns = Object.values(Game.spawns);
+    creeps = Object.values(Game.creeps);
+    structures = Object.values(Game.structures);
 
-    spawn = spawns["Spawn1"];
-    architector(spawn.room);
+    spawn = spawns[0];
+    sources = spawn.room.find(FIND_SOURCES);
+    structures = structures.filter(struct => struct.room.name == spawn.room.name);
+    sites = spawn.room.find(FIND_CONSTRUCTION_SITES);
+    spawns = spawns.filter(i => i.room.name == spawn.room.name);
+    creeps = creeps.filter(creep => creep.room.name == spawn.room.name);
 
-    creeps = spawn.room.find(FIND_MY_CREEPS);
+    architector(spawn.room, sources, structures, sites);
+
     harvesters = creeps.filter(creep => creep.memory["role"] == "harvester");
-    harvesters.forEach(creep => harvester(creep));
+    harvesters.forEach(creep => harvester(creep, sources, spawns));
     upgraders = creeps.filter(creep => creep.memory["role"] == "upgrader");
-    upgraders.forEach(creep => upgrader(creep));
+    upgraders.forEach(creep => upgrader(creep, spawns));
     builders = creeps.filter(creep => creep.memory["role"] == "builder");
-    builders.forEach(creep => builder(creep));
+    builders.forEach(creep => builder(creep, spawns, structures, sites));
 
     let renew = creeps.filter(creep => creep.ticksToLive < 200);
     renew = spawn.pos.findInRange(renew, 1);

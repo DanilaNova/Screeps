@@ -7,25 +7,17 @@
  * mod.thing == 'a thing'; // true
  */
 
-module.exports = function(creep) {
+module.exports = function(creep, spawns) {
     if(creep.store.getUsedCapacity() == 0) {
-        let spawn = creep.pos.findClosestByPath(creep.room.find(FIND_MY_SPAWNS));
-        if(creep.memory._move) {
-            if(creep.memory._move.dest != spawn.pos) {
-                creep.moveTo(spawn);
-            }
-        } else {creep.moveTo(spawn);}
+        let spawn = creep.pos.findClosestByPath(spawns);
+        creep.moveTo(spawn);
         if(spawn.store.getUsedCapacity(RESOURCE_ENERGY) > 200) {
             creep.withdraw(spawn, RESOURCE_ENERGY)
         }
     } else {
         let controller = creep.room.controller
         if(creep.upgradeController(controller) == ERR_NOT_IN_RANGE) {
-            if(creep.memory._move) {
-                if(creep.memory._move.dest != controller.pos) {
-                    creep.moveTo(controller);
-                }
-            } else {creep.moveTo(controller);}
+            creep.moveTo(controller);
         }
     }
 }

@@ -7,33 +7,25 @@
  * mod.thing == 'a thing'; // true
  */
 
-module.exports = function(creep) {
+module.exports = function(creep, spawns, structures, sites) {
     if(creep.store.getUsedCapacity() == 0) {
         creep.memory["task"] == null; // TODO: force the builders not to change the task until the previous one is completed
-        let spawn = creep.pos.findClosestByPath(creep.room.find(FIND_MY_SPAWNS));
+        let spawn = creep.pos.findClosestByPath(spawns);
         creep.moveTo(spawn);
         if(spawn.store.getUsedCapacity(RESOURCE_ENERGY) > 200) {
             creep.withdraw(spawn, RESOURCE_ENERGY);
         }
     } else {
-        let repair = creep.room.find(FIND_STRUCTURES).filter(struct => struct.structureType == STRUCTURE_ROAD & struct.hitsMax - struct.hits >= 100);
+        let repair = structures.filter(struct => struct.structureType == STRUCTURE_ROAD & struct.hitsMax - struct.hits >= 100);
         if(repair.length > 0) {
             repair = creep.pos.findClosestByPath(repair)
             if(creep.repair(repair) == ERR_NOT_IN_RANGE) {
-                if(creep.memory._move) {
-                    if(creep.memory._move.dest != repair.pos) {
-                        creep.moveTo(repair);
-                    }
-                } else {creep.moveTo(repair)}
+                creep.moveTo(repair);
             }
         } else {
-            let build = creep.pos.findClosestByPath(creep.room.find(FIND_MY_CONSTRUCTION_SITES));
+            let build = creep.pos.findClosestByPath(sites);
             if(creep.build(build) == ERR_NOT_IN_RANGE) {
-                if(creep.memory._move) {
-                    if(creep.memory._move.dest != build.pos) {
-                        creep.moveTo(build);
-                    }
-                } else {creep.moveTo(build)}
+                creep.moveTo(build);
             }
         }
     }
