@@ -11,13 +11,9 @@ module.exports = function(creep) {
     if(creep.store.getUsedCapacity() == 0) {
         creep.memory["task"] == null; // TODO: force the builders not to change the task until the previous one is completed
         let spawn = creep.pos.findClosestByPath(creep.room.find(FIND_MY_SPAWNS));
-        if(creep.memory._move) {
-            if(creep.memory._move.dest != spawn.pos) {
-                creep.moveTo(spawn);
-            }
-        } else {creep.moveTo(spawn);}
-        if(spawn.store.getUsedCapacity(RESOURCE_ENERGY) > 100) {
-            creep.withdraw(spawn, RESOURCE_ENERGY)
+        creep.moveTo(spawn);
+        if(spawn.store.getUsedCapacity(RESOURCE_ENERGY) > 200) {
+            creep.withdraw(spawn, RESOURCE_ENERGY);
         }
     } else {
         let repair = creep.room.find(FIND_STRUCTURES).filter(struct => struct.structureType == STRUCTURE_ROAD & struct.hitsMax - struct.hits >= 100);
