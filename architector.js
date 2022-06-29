@@ -7,8 +7,8 @@
  * mod.thing == 'a thing'; // true
  */
 
-module.exports = function(room) {
-    let path = room.controller.pos.findPathTo(room.controller.pos.findClosestByPath(room.find(FIND_MY_SPAWNS)), {ignoreCreeps: true});
+module.exports = function(room, sources, structures) {
+    let path = room.controller.pos.findPathTo(room.controller.pos.findClosestByPath(FIND_MY_SPAWNS, {ignoreCreeps: true}), {ignoreCreeps: true});
     let sources = room.find(FIND_SOURCES);
     path.pop();
     path.forEach(pos => {
