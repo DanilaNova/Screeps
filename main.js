@@ -42,4 +42,26 @@ module.exports.loop = function() {
     if(harvesters.length < (spawn.room.find(FIND_SOURCES).length * 2)) {spawn.spawnCreep([MOVE,CARRY,WORK], "Harvester " + Math.round(Math.random() * 100), {memory: {role: "harvester"}})}
     else if(upgraders.length < 1) {spawn.spawnCreep([MOVE,CARRY,WORK], "Upgrader " + Math.round(Math.random() * 100), {memory: {role: "upgrader"}})}
     else if(builders.length < 1) {spawn.spawnCreep([MOVE,CARRY,WORK], "Builder " + Math.round(Math.random() * 100), {memory: {role: "builder"}})}
+
+    // Clear Memory.creeps
+    let cleared = 0;
+    Object.keys(Memory.creeps).forEach(name => {if(!Game.creeps[name]) {delete Memory.creeps[name]; cleared++}});
+
+    let date = new Date();
+    if(Memory.report == null) {
+        Memory.report = {cleared: cleared, day: date.getDate()};
+    } else if (Memory.report.cleared == null) {
+        Memory.report.cleared = cleared;
+    } else if (Memory.report.day == null) {
+        Memory.report.day = date.getDate();
+    } else {
+        Memory.report.cleared += cleared;
+        if(Memory.report.day != date.getDate()) {
+            let report =
+                "Ежедневный отчёт!\n\n" +
+                `Крипы удалённые из памяти: ${Memory.report.cleared}\n\n` +
+                `Дата: ${date.toLocaleString("ru", {hour12: false})}`
+            Game.notify(report)
+        }
+    }
 }
