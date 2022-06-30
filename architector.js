@@ -6,8 +6,7 @@
  * var mod = require('architector');
  * mod.thing == 'a thing'; // true
  */
-
-module.exports = function(room, sources, structures, sites) {
+function go(room, sources, structures, sites) {
     let path = room.controller.pos.findPathTo(room.controller.pos.findClosestByPath(FIND_MY_SPAWNS, {ignoreCreeps: true}), {ignoreCreeps: true});
 
     path.pop();
@@ -31,4 +30,26 @@ module.exports = function(room, sources, structures, sites) {
             Game.notify("From Architector on " + Game.shard.name + "\nCannot find closest to source base stucture!");
         }
     });
+}
+
+module.exports = function(room, sources, structures, sites) {
+    if(!Memory["rooms"]) {
+        Memory["rooms"] = {};
+        Memory["rooms"][room.name] = {checked: true, structuresCount: structures.length, controllerLevel: room.controller.level};
+        go(room, sources, structures, sites);
+    } else if(!Memory["rooms"][room.name]) {
+        Memory["rooms"][room.name] = {checked: true, structuresCount: structures.length, controllerLevel: room.controller.level};
+        go(room, sources, structures, sites);
+    } else if(!Memory["rooms"][room.name].checked) {
+        Memory["rooms"][room.name].checked = true;
+        Memory["rooms"][room.name].structuresCount = structures.length;
+        Memory["rooms"][room.name].controllerLevel = room.controller.level;
+        go(room, sources, structures, sites);
+    } else if(Memory["rooms"][room.name].structuresCount != structures.length) {
+        Memory["rooms"][room.name].structuresCount = structures.length;
+        go(room, sources, structures, sites);
+    } else if(Memory["rooms"][room.name].controllerLevel != room.controller.level) {
+        Memory["rooms"][room.name].controllerLevel = room.controller.level;
+        go(room, sources, structures, sites);
+    }
 }
