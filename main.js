@@ -6,11 +6,13 @@ const architector = require("architector");
 var rooms, creeps, sources, structures, spawns, spawn, harvesters, upgraders, builders;
 
 module.exports.loop = function() {
-    //creeps = Game.creeps;
+
+    // Get game objects
     spawns = Object.values(Game.spawns);
     creeps = Object.values(Game.creeps);
     structures = Object.values(Game.structures);
 
+    // Filter objects by current room
     spawn = spawns[0];
     sources = spawn.room.find(FIND_SOURCES);
     structures = structures.filter(struct => struct.room.name == spawn.room.name);
@@ -18,8 +20,10 @@ module.exports.loop = function() {
     spawns = spawns.filter(i => i.room.name == spawn.room.name);
     creeps = creeps.filter(creep => creep.room.name == spawn.room.name);
 
+    // Launch architector (construction manager)
     architector(spawn.room, sources, structures, sites);
 
+    // Launch creep managers
     harvesters = creeps.filter(creep => creep.memory["role"] == "harvester");
     harvesters.forEach(creep => harvester(creep, sources, spawns));
     upgraders = creeps.filter(creep => creep.memory["role"] == "upgrader");
@@ -27,12 +31,14 @@ module.exports.loop = function() {
     builders = creeps.filter(creep => creep.memory["role"] == "builder");
     builders.forEach(creep => builder(creep, spawns, structures, sites));
 
-    let renew = creeps.filter(creep => creep.ticksToLive < 200);
+    // Renew creeps if needed
+    let renew = creeps.filter(creep => creep.ticksToLive < 300);
     renew = spawn.pos.findInRange(renew, 1);
     if(renew.length > 0){
         spawn.renewCreep(spawn.pos.findClosestByRange(renew));
     }
 
+    // Spawn new creeps if needed
     if(harvesters.length < (spawn.room.find(FIND_SOURCES).length * 2)) {spawn.spawnCreep([MOVE,CARRY,WORK], "Harvester " + Math.round(Math.random() * 100), {memory: {role: "harvester"}})}
     else if(upgraders.length < 1) {spawn.spawnCreep([MOVE,CARRY,WORK], "Upgrader " + Math.round(Math.random() * 100), {memory: {role: "upgrader"}})}
     else if(builders.length < 1) {spawn.spawnCreep([MOVE,CARRY,WORK], "Builder " + Math.round(Math.random() * 100), {memory: {role: "builder"}})}
